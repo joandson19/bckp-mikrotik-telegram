@@ -47,8 +47,15 @@
       :log error "Falha ao enviar backup pelo Email: $email_result"
     }
     
-    # Envia backup para o telegram
-    :global telegram_result
-    :set telegram_result [/tool fetch url="https://api.telegram.org/bot$token/sendDocument/?chat_id=$chatid&document=$export_file"]
-	# Envia uma mensagem de log informando o envio do arquivo para o telegram
-    :log warning "Backup enviado para o Telegram com sucesso!"
+# Envia backup para o telegram com uma mensagem e evita criar arquivo temporário com o resultado da chamada
+:global telegram_result
+:set telegram_result [/tool fetch url="https://api.telegram.org/bot$token/sendDocument/?chat_id=$chatid&document=$export_file&caption=Backup do Servidor $nome - $data às $hora" keep-result=no]
+
+# Verifica se a mensagem foi enviada com sucesso
+:if ($telegram_result = "done") do={
+  # Envia uma mensagem de log do envio do backup pelo telegram
+  :log warning "Backup enviado para o Telegram com sucesso!"
+} else={
+  # Envia uma mensagem de log de falha no envio do backup pelo telegram
+  :log error "Falha ao enviar backup pelo Telegram: $telegram_result"
+}
