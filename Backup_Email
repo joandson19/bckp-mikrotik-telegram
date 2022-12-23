@@ -1,0 +1,21 @@
+:log warning "Iniciando backup por e-mail"
+:delay 3s
+
+/system backup save name=backup_e-mail.backup
+:delay 3s
+
+/export file=backup_e-mail
+:delay 3s
+
+:log warning "Backup criado com sucesso!"
+:delay 2s
+
+:global data [/system clock get date]
+:global hora [/system clock get time]
+:global nome [/system identity get name]
+:delay 1s
+
+/tool e-mail send to="seu-email@gmail.com" subject="Backup do Servidor $nome - $data às $hora" body="Backup automático do servidor $nome realizado às $hora de $data." file=backup_e-mail.rsc
+:delay 2s
+
+:log warning message="Backup Enviado com sucesso!"
