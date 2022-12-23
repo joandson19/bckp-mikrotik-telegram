@@ -5,57 +5,58 @@
 :global chatid "1234567890123";
 :global email "seu-email@gmail.com";
 
-
 # Não alterar mais nada abaixo
 # Exceto por sua conta e risco
 
 # Envia uma mensagem de log do início do backup
-:log warning "Iniciando backup por e-mail"
+:log warning "Iniciando backup por e-mail";
 
 # Salva o backup dentro do Mikrotik
 :global backup_file
 :set backup_file "/backup_e-mail.backup"
-/system backup save name=$backup_file
+/system backup save name=$backup_file;
 
 # Verifica se o backup foi criado com sucesso
 :if ([:len [/file find name=$backup_file]] > 0) do={
+  # Envia uma mensagem de log de criação do backup
+  :log warning "Backup criado com sucesso!";
+  
   # Salva o export em um arquivo dentro do Mikrotik
   :global export_file
   :set export_file "/backup_e-mail.rsc"
-  /export file=$export_file
+  /export file=$export_file;
   
   # Verifica se o arquivo de exportação foi criado com sucesso
   :if ([:len [/file find name=$export_file]] > 0) do={
-    # Envia uma mensagem de log de criação do backup
-    :log warning "Backup criado com sucesso!"
-    
     # Variáveis para data hora e nome
     :global data [/system clock get date]
     :global hora [/system clock get time]
     :global nome [/system identity get name]
     
     # Envia o e-mail apenas do arquivo do export
-    :global email_result
-    :set email_result [/tool e-mail send to=$email subject="Backup do Servidor $nome - $data às $hora" body="Backup automático do servidor $nome realizado às $hora de $data." file=$export_file]
+    /tool e-mail send to=$email subject="Backup do Servidor $nome - $data às $hora" body="Backup automático do servidor $nome realizado às $hora de $data." file=$export_file;
     
     # Verifica se o e-mail foi enviado com sucesso
-    :if ($email_result = "sent") do={
+    :if ([:len [/tool e-mail find message-id=$export_file]] > 0) do={
       # Envia uma mensagem de log do envio do backup pelo email
-      :log warning "Backup enviado para o Email com sucesso!"
+      :log warning "Backup enviado para o Email com sucesso!";
     } else={
       # Envia uma mensagem de log de falha no envio do backup pelo email
-      :log error "Falha ao enviar backup pelo Email: $email_result"
+      :log error "Falha ao enviar backup pelo Email";
     }
     
-# Envia backup para o telegram com uma mensagem e evita criar arquivo temporário com o resultado da chamada
+    # Envia backup para o telegram com uma mensagem e evita criar arquivo temporário com o resultado da chamada
 :global telegram_result
 :set telegram_result [/tool fetch url="https://api.telegram.org/bot$token/sendDocument/?chat_id=$chatid&document=$export_file&caption=Backup do Servidor $nome - $data às $hora" keep-result=no]
 
 # Verifica se a mensagem foi enviada com sucesso
 :if ($telegram_result = "done") do={
   # Envia uma mensagem de log do envio do backup pelo telegram
-  :log warning "Backup enviado para o Telegram com sucesso!"
+  :log warning "Backup enviado para o Telegram com sucesso!";
 } else={
   # Envia uma mensagem de log de falha no envio do backup pelo telegram
-  :log error "Falha ao enviar backup pelo Telegram: $telegram_result"
+  :log error "Falha ao enviar backup pelo Telegram: $telegram_result";
 }
+
+# Envia uma mensagem de log de finalização do envio do backup
+:log warning message="Backup Enviado com sucesso!";
