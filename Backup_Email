@@ -1,5 +1,19 @@
 # Script para Backup do Mikrotik
 
+
+# altere abaixo o token e id
+
+# token do bot do telegram
+:global token="000000000:0000000000000-0000000000000000000000000000000"
+
+# ID do grupo ou usuário do telegram
+:global chatid="-1234567890123"
+
+
+
+# não alterar mais nada abaixo
+# exceto por sua conta e risco
+
 # envia uma mensagem de log do início do backup
 :log warning "Iniciando backup por e-mail"
 
@@ -40,8 +54,26 @@
 # comando que envia o e-mail apenas do arquivo do export.
 /tool e-mail send to="seu-email@gmail.com" subject="Backup do Servidor $nome - $data às $hora" body="Backup automático do servidor $nome realizado às $hora de $data." file=backup_e-mail.rsc
 
-# aguarda 2 segundos
-:delay 2s
+# aguarda 3 segundos
+:delay 3s
+
+# envia uma mensagem de log do envio do backup pelo email
+:log warning "Backup enviado para o Email com sucesso!"
+
+# aguarda 3 segundos
+:delay 3s
+
+# envia backup para o telegram
+/tool fetch url="https://api.telegram.org/bot$token/sendMessage?chat_id=$chatid&text=Backup do Servidor $nome - $data às $hora"
+
+# aguarda 3 segundos
+:delay 3s
+
+# envia uma mensagem de log do envio do backup pelo telegram
+:log warning "Backup enviado para o Telegram com sucesso!"
+
+# aguarda 3 segundos
+:delay 3s
 
 # envia uma mensagem de log de finalização do envio do backup
 :log warning message="Backup Enviado com sucesso!"
