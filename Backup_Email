@@ -4,10 +4,10 @@
 # altere abaixo o token e id
 
 # token do bot do telegram
-:global token="000000000:0000000000000-0000000000000000000000000000000"
+:global token "000000000:0000000000000-0000000000000000000000000000000";
 
 # ID do grupo ou usuário do telegram
-:global chatid="-1234567890123"
+:global chatid "1234567890123";
 
 
 
@@ -64,7 +64,7 @@
 :delay 3s
 
 # envia backup para o telegram
-/tool fetch url="https://api.telegram.org/bot$token/sendMessage?chat_id=$chatid&text=Backup do Servidor $nome - $data às $hora"
+/tool fetch url="https://api.telegram.org/bot$token/sendMessage/?chat_id=$chatid&text=Backup do Servidor $nome - $data às $hora"
 
 # aguarda 3 segundos
 :delay 3s
