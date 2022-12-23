@@ -1,21 +1,47 @@
+# Script para Backup do Mikrotik
+
+# envia uma mensagem de log do início do backup
 :log warning "Iniciando backup por e-mail"
+
+# aguarda 3 segundos
 :delay 3s
 
+
+# salvando o backup dentro do mikrotik
 /system backup save name=backup_e-mail.backup
+
+# aguarda 3 segundos
 :delay 3s
 
+
+# salvando o export em um arquivo dentro do mikrotik
 /export file=backup_e-mail
+
+# aguarda 3 segundos
 :delay 3s
 
+
+# envia uma mensagem de log de criação do backup
 :log warning "Backup criado com sucesso!"
+
+# aguarda 2 segundos
 :delay 2s
 
+
+# variáveis para data hora e nome
 :global data [/system clock get date]
 :global hora [/system clock get time]
 :global nome [/system identity get name]
+
+# aguarda 1 segundo
 :delay 1s
 
+
+# comando que envia o e-mail apenas do arquivo do export.
 /tool e-mail send to="seu-email@gmail.com" subject="Backup do Servidor $nome - $data às $hora" body="Backup automático do servidor $nome realizado às $hora de $data." file=backup_e-mail.rsc
+
+# aguarda 2 segundos
 :delay 2s
 
+# envia uma mensagem de log de finalização do envio do backup
 :log warning message="Backup Enviado com sucesso!"
