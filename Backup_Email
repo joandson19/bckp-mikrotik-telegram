@@ -5,60 +5,29 @@
 #:global CHATID "1234567890123";
 :global EMAIL "seu-email@gmail.com";
 
+
+
 # Não alterar mais nada abaixo
 # Exceto por sua conta e risco
 
 # Envia uma mensagem de log do início do backup
-:log warning "Iniciando backup por e-mail";
+:log warning "Iniciando script de backup";
 
 # Salva o backup dentro do Mikrotik
-:global BACKUP_FILE
-:set BACKUP_FILE "/backup_e-mail.backup"
-/system backup save name=$BACKUP_FILE;
+/system backup save name=backup_e-mail.backup
 
-## Verifica se o backup foi criado com sucesso
-#:if ([:len [/file find name=$BACKUP_FILE]] > 0) do={
-  # Salva o export em um arquivo dentro do Mikrotik
-  :global EXPORT_FILE
-  :set EXPORT_FILE "/backup_e-mail.rsc"
-  /export file=$EXPORT_FILE;
-  
-#  # Verifica se o arquivo de exportação foi criado com sucesso
-#  :if ([:len [/file find name=$EXPORT_FILE]] > 0) do={
-#    # Envia uma mensagem de log de criação do backup
-#    :log warning "Backup criado com sucesso!";
-    
-    # Variáveis para data hora e nome
-    :global data [/system clock get date]
-    :global hora [/system clock get time]
-    :global nome [/system identity get name]
-    
-#    # Envia o e-mail apenas do arquivo do export
-#    :global email_result
-#    :set email_result [/tool e-mail send to=$EMAIL subject="Backup do Servidor $nome - $data às $hora" body="Backup automático do servidor $nome realizado às $hora de $data." file=$EXPORT_FILE]
-	 /tool e-mail send to=$EMAIL subject="Backup do Servidor $nome - $data às $hora" body="Backup automático do servidor $nome realizado às $hora de $data." file=$EXPORT_FILE
-    
-#    # Verifica se o e-mail foi enviado com sucesso
-#    :if ($email_result = "sent to=$EMAIL") do={
-#      # Envia uma mensagem de log do envio do backup pelo email
-#      :log warning "Backup enviado para o Email com sucesso!";
-#    } else={
-#      # Envia uma mensagem de log de falha no envio do backup pelo email
-#      :log error "Falha ao enviar backup pelo Email: $email_result";
-#    }
+# Salva o export em um arquivo dentro do Mikrotik
+/export file=backup_e-mail.rsc;
+
+# Variáveis para data hora e nome
+:global data [/system clock get date];
+:global hora [/system clock get time];
+:global nome [/system identity get name];
+
+/tool e-mail send to=$EMAIL subject="Backup do Servidor $nome - $data às $hora" body="Backup automático do servidor $nome realizado às $hora de $data." file=backup_e-mail.rsc;
 	
-## Envia backup para o telegram com uma mensagem e evita criar arquivo temporário com o resultado da chamada
-#:global telegram_result
-#:set telegram_result [/tool fetch url="https://api.telegram.org/bot$TOKEN/sendDocument/?chat_id=$CHATID&document=$EXPORT_FILE&caption=Backup do Servidor $nome - $data às $hora" keep-result=no]
-#
-## Verifica se a mensagem foi enviada com sucesso
-#:if ($telegram_result = "200") do={
-#  # Envia uma mensagem de log do envio do backup pelo telegram
-#  :log warning "Backup enviado para o Telegram com sucesso!";
-#} else={
-#  # Envia uma mensagem de log de falha no envio do backup pelo telegram
-#  :log error "Falha ao enviar backup pelo Telegram: $telegram_result";
-#}
+# Envia para o Telegram
+# /tool fetch url="https://api.telegram.org/bot$TOKEN/sendDocument/?chat_id=$CHATID&document=backup_e-mail.rsc&caption=Backup do Servidor $nome - $data às $hora" keep-result=no;
 
 # Envia uma mensagem de log de finalização do envio do backup
 :log warning message="Backup Enviado com sucesso!";
