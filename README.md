@@ -1,5 +1,7 @@
 # Requisitos para o mkbkp.sh funcionar
 
+# De inicio acho que não preciso nem falar que precisa ter um bot criado né?
+
 Instale o sshpass e unzip
 * apt install sshpass -y
 * apt install unzip -y
