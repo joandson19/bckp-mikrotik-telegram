@@ -1,42 +1,18 @@
-# Envia Backup do Mikrotik para Email e para o Telegram
-Este script foi criado para realizar o backup do Mikrotik e enviá-lo por e-mail e pelo aplicativo de mensagens Telegram.
+# Requisitos para o mkbkp.sh funcionar
 
+Instale o sshpass e unzip
+* apt install sshpass -y
+* apt install unzip -y
 
+Entre no arquivo mkbkp.sh e altere as variaveis de TOKEN e CHAT_ID do telegram, após é só rodar o comando como no exemplo abaixo
+* ./mkbkp "IP" "USER" "SENHA"
 
-## Pré-requisitos
-Ter um bot do Telegram criado e o token de acesso.
+O script irá acessar seu mikrotik e irá primeiramente coletar o nome do seu equipamento usado o comando "/system identity print", com isso ele irá acessar pela segunda vez gerando o arquivo de backup, e na terceira vez ele irá acessar novamente de scp para baixar o arquivo para uma pasta temporaria para daí compactar e após enviar via para o telegram. Por fim ele irá remover o arvivo que agora já não é mais necessário. 
 
-Ter uma conta de e-mail com configuração de acesso SMTP.
+# Caso queira adicionar a cron para agendar o backup automatico.
+No exemplo irei por para rodar o script todos os dias as 20:00 horas!
 
+* contrab -e
 
+00 20 * * *	/home/admin/Backup/mikrotik/mkbkp.sh "IP" "USUARIO" "SENHA" &>/dev/null
 
-## Instalação
-
-1. Configure o acesso ao seu email através do comando `/tool e-mail set`:
-```
-/tool e-mail set address=SMTP_SERVER from="NOME_DO_SEU_MIKROTIK" password=SENHA_DO_EMAIL port=587 start-tls=yes user=SEU_EMAIL@gmail.com
-```
-
-2. Adicione o script ao Mikrotik através do comando `/system script add`:
-```
-/system script add name=backup_email owner=SEU_USER policy=ftp,reboot,read,write,policy,test,password,sniff,sensitive,romon source=[SCRIPT_FONTE]
-```
-
-3. Adicione uma tarefa agendada para executar o script diariamente, por exemplo:
-```
-/system scheduler add interval=1d name=backup_email on-event=backup_email policy=ftp,reboot,read,write,policy,test,password,sniff,sensitive,romon start-date=dez/23/2022 start-time=03:30:00
-```
-
-
-## Personalização
-O script possui três variáveis que devem ser configuradas de acordo com suas necessidades:
-
-`token`: Token de acesso do seu bot no Telegram.
-
-`chatid`: ID do grupo ou usuário do Telegram para receber o backup.
-
-`email`: Endereço de email para receber o backup.
-
-
-
-# Equipe BrLink.org
